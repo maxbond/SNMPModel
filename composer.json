@@ -1,0 +1,23 @@
+{
+    "name": "maxbond/snmpmodel",
+    "description": "Model for SNMP data",
+    "type": "library",
+    "require": {
+        "php": ">=7.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Maxim Bondarev",
+            "email": "macintosh.way@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Maxbond\\SNMPModel": "src"
+        }
+    }
+}

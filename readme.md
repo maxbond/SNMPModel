@@ -2,6 +2,8 @@
 
 Use model pattern for work with SNMP data
 
+composer install: composer require maxbond/snmpmodel
+
 example:
 
 ```

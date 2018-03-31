@@ -1,0 +1,23 @@
+
+ethernetOperStatus:
+    oid: .1.3.6.1.2.1.2.2.1.8.1
+    type: get
+    modifier: port
+
+systemDescription:
+    oid: .1.3.6.1.2.1.1.1.0
+    type: get
+
+uptIme:
+    oid: .1.3.6.1.2.1.1.3.0
+    type: get
+
+interfacesCount:
+    oid: .1.3.6.1.2.1.2.1.0
+    type: get
+    modifier: numeric
+
+portsOperStatus:
+    oid: .1.3.6.1.2.1.2.2.1.8
+    type: walk
+    modifier: port

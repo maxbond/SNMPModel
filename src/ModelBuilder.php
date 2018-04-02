@@ -43,7 +43,7 @@ class ModelBuilder
      *
      * @return array
      *
-     * @throws \Exception
+     * @throws \Maxbond\SNMPModel\SNMPModelException
      */
     public function get(\SNMP $snmpSession): array
     {

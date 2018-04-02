@@ -22,30 +22,42 @@ class SNMPModel
         'numeric' => ModifierNumeric::class,
     ];
 
+    const ONE_SECOND = 1000000;
+
     /**
+     * SNMP version
+     *
      * @var int
      */
     protected $snmpVersion = \SNMP::VERSION_2c;
 
     /**
+     * Connection timeout
+     *
      * @var int
      */
-    protected $snmpTimeout = 1000000;
+    protected $snmpTimeout = self::ONE_SECOND;
 
     /**
+     * SNMP community
+     *
      * @var string
      */
     protected $snmpCommunity;
 
     /**
+     * Model scheme
+     *
      * @var array
      */
     protected $model;
 
     /**
+     * YAML file
+     *
      * @var string
      */
-    protected $fileName = '';
+    protected $file = '';
 
     /**
      * Child class receivers classes.
@@ -76,6 +88,8 @@ class SNMPModel
     protected $enumPrint = true;
 
     /**
+     * SNMP decice IP address
+     *
      * @var string
      */
     private $ip;
@@ -100,6 +114,8 @@ class SNMPModel
      *
      * @param string $ip
      * @param string $snmpCommunity
+     *
+     * @throws \Maxbond\SNMPModel\SNMPModelException
      */
     public function __construct(
         string $ip,
@@ -117,7 +133,7 @@ class SNMPModel
      *
      * @return array
      *
-     * @throws \Exception
+     * @throws \Maxbond\SNMPModel\SNMPModelException
      */
     public function get()
     {
@@ -145,12 +161,27 @@ class SNMPModel
     }
 
     /**
+     * Set model to given scheme.
+     *
+     * @param $model
+     */
+    public function setModel($model)
+    {
+        $this->model = $model;
+    }
+
+    /**
      *  Boot model.
+     *
+     * @throws \Maxbond\SNMPModel\SNMPModelException
      */
     protected function boot()
     {
-        if (!empty($this->fileName)) {
-            $this->model = $this->loadModelFromYAMLFile($this->fileName);
+        if (! empty($this->file)) {
+            if (! file_exists($this->file)) {
+                throw new SNMPModelException('File '.$this->file.' does not exists');
+            }
+            $this->model = Yaml::parseFile($this->file);
         }
     }
 
@@ -159,34 +190,30 @@ class SNMPModel
      */
     protected function initClassMaps()
     {
+        /**
+         * Register default class maps.
+         */
         $modifiersClasses = static::DEFAULT_MODIFIERS_CLASS_MAP;
         $receiversClasses = static::DEFAULT_RECEIVERS_CLASS_MAP;
+
+        /*
+         * Merge with child class maps
+         */
         if (null !== $this->modifiersClasses) {
             $modifiersClasses = array_merge($modifiersClasses, $this->modifiersClasses);
         }
         if (null !== $this->receiversClasses) {
             $receiversClasses = array_merge($receiversClasses, $this->receiversClasses);
         }
+
         $this->receiversClassMap = new ReceiversClassMap($receiversClasses);
         $this->modifiersClassMap = new ModifiersClassMap($modifiersClasses);
     }
 
     /**
-     * Load model from YAML file.
-     *
-     * @param $fileName
-     *
-     * @return mixed
-     */
-    protected function loadModelFromYAMLFile($fileName)
-    {
-        return Yaml::parseFile($fileName);
-    }
-
-    /**
      * Initialize SNMP session.
      *
-     * @throws \Exception
+     * @throws \Maxbond\SNMPModel\SNMPModelException
      */
     protected function initSNMP()
     {
@@ -194,10 +221,11 @@ class SNMPModel
             $this->snmpSession = new \SNMP($this->snmpVersion, $this->ip, $this->snmpCommunity, $this->snmpTimeout);
             $this->snmpSession->exceptions_enabled = true;
             $this->snmpSession->oid_output_format = SNMP_OID_OUTPUT_NUMERIC;
-            if ($this->quickPrint) {
+
+            if (true === $this->quickPrint) {
                 $this->snmpSession->quick_print = true;
             }
-            if ($this->enumPrint) {
+            if (true === $this->enumPrint) {
                 $this->snmpSession->enum_print = true;
             }
         } catch (\Exception $e) {

@@ -8,6 +8,12 @@ namespace Maxbond\SNMPModel;
  */
 class ReceiveByType
 {
+    const DEFAULT_RECEIVER_TYPE = 'get';
+
+    const RECEIVER_FIELD = 'type';
+
+    const OID_FIELD = 'oid';
+
     /**
      * @var \Maxbond\SNMPModel\ReceiversClassMap
      */
@@ -23,11 +29,18 @@ class ReceiveByType
      */
     protected $packedModel;
 
+    /**
+     * ReceiveByType constructor.
+     *
+     * @param array                                $model
+     * @param \Maxbond\SNMPModel\ReceiversClassMap $receiverClassMap
+     * @param \SNMP                                $snmpSession
+     */
     public function __construct(array $model, ReceiversClassMap $receiverClassMap, \SNMP $snmpSession)
     {
         $this->receiverClassMap = $receiverClassMap;
         $this->snmpSession = $snmpSession;
-        $this->packedModel = PackModelByType::pack($model, $this->receiverClassMap);
+        $this->packedModel = $this->aggregateTypes($model, $this->receiverClassMap);
     }
 
     /**
@@ -35,7 +48,7 @@ class ReceiveByType
      *
      * @return array
      *
-     * @throws \Exception
+     * @throws \Maxbond\SNMPModel\SNMPModelException
      */
     public function receive(): array
     {
@@ -51,5 +64,29 @@ class ReceiveByType
         }
 
         return $result;
+    }
+
+    /**
+     * @param array                                $model
+     * @param \Maxbond\SNMPModel\ReceiversClassMap $receiverClassMap
+     *
+     * @return array
+     */
+    protected function aggregateTypes(array $model, ReceiversClassMap $receiverClassMap): array
+    {
+        $aggregatedTypes = [];
+        foreach ($model as $name => $item) {
+            if (!array_key_exists(static::OID_FIELD, $item)) {
+                continue;
+            }
+            if (array_key_exists(static::RECEIVER_FIELD, $item)
+                && $receiverClassMap->typeExist($item[static::RECEIVER_FIELD])) {
+                $aggregatedTypes[$item[static::RECEIVER_FIELD]][$name] = $item[static::OID_FIELD];
+            } else {
+                $aggregatedTypes[static::DEFAULT_RECEIVER_TYPE][$name] = $item[static::OID_FIELD];
+            }
+        }
+
+        return $aggregatedTypes;
     }
 }

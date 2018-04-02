@@ -25,35 +25,35 @@ class SNMPModel
     const ONE_SECOND = 1000000;
 
     /**
-     * SNMP version
+     * SNMP version.
      *
      * @var int
      */
     protected $snmpVersion = \SNMP::VERSION_2c;
 
     /**
-     * Connection timeout
+     * Connection timeout.
      *
      * @var int
      */
     protected $snmpTimeout = self::ONE_SECOND;
 
     /**
-     * SNMP community
+     * SNMP community.
      *
      * @var string
      */
     protected $snmpCommunity;
 
     /**
-     * Model scheme
+     * Model scheme.
      *
      * @var array
      */
     protected $model;
 
     /**
-     * YAML file
+     * YAML file.
      *
      * @var string
      */
@@ -88,7 +88,7 @@ class SNMPModel
     protected $enumPrint = true;
 
     /**
-     * SNMP decice IP address
+     * SNMP decice IP address.
      *
      * @var string
      */
@@ -177,8 +177,8 @@ class SNMPModel
      */
     protected function boot()
     {
-        if (! empty($this->file)) {
-            if (! file_exists($this->file)) {
+        if (!empty($this->file)) {
+            if (!file_exists($this->file)) {
                 throw new SNMPModelException('File '.$this->file.' does not exists');
             }
             $this->model = Yaml::parseFile($this->file);

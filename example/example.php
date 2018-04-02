@@ -6,7 +6,7 @@ use Maxbond\SNMPModel\SNMPModel;
 use Maxbond\SNMPModel\Interfaces\ModifiersInterface;
 
 /**
- * Custom value modifier class
+ * Custom value modifier class.
  */
 class PortModifier implements ModifiersInterface
 {
@@ -26,10 +26,11 @@ class PortModifier implements ModifiersInterface
 
 class ExampleModel extends SNMPModel
 {
-    protected $fileName = 'demo.yaml';
+    protected $file = 'demo.yaml';
 
     /**
-     * Add custom modifier to model
+     * Add custom modifier to model.
+     *
      * @var array
      */
     protected $modifiersClasses = [
@@ -37,9 +38,8 @@ class ExampleModel extends SNMPModel
     ];
 }
 
-$model = new ExampleModel('192.168.0.10', 'public');
-
 try {
+    $model = new ExampleModel('127.0.0.1', 'public');
     print_r($model->get());
 } catch (\Exception $e) {
     echo $e->getMessage();

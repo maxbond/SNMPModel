@@ -29,12 +29,15 @@ class ModifyByType
      *
      * @return array
      *
-     * @throws \Exception
+     * @throws \Maxbond\SNMPModel\SNMPModelException
      */
     public function modify(array $result): array
     {
         foreach ($this->model as $name => $item) {
-            if (array_key_exists(static::MODIFIER_FIELD, $item) && array_key_exists($name, $result) && $this->modifiersClassMap->typeExist($item[static::MODIFIER_FIELD])) {
+            $modifierRegistered = array_key_exists(static::MODIFIER_FIELD, $item) && $this->modifiersClassMap->typeExist($item[static::MODIFIER_FIELD]);
+            $resultHasModelField = array_key_exists($name, $result);
+
+            if ($resultHasModelField && $modifierRegistered) {
                 try {
                     $modifierClass = $this->modifiersClassMap->getClass($item[static::MODIFIER_FIELD]);
                 } catch (\Exception $e) {

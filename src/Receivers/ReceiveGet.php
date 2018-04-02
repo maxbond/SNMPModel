@@ -17,7 +17,7 @@ class ReceiveGet implements ReceiverInterface
      *
      * @return array
      *
-     * @throws \Exception
+     * @throws \Maxbond\SNMPModel\SNMPModelException
      */
     public function get(array $oidList): array
     {

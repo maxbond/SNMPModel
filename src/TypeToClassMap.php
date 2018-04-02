@@ -41,7 +41,7 @@ abstract class TypeToClassMap
      *
      * @return mixed
      *
-     * @throws \Exception
+     * @throws \Maxbond\SNMPModel\SNMPModelException
      */
     public function getClass(string $type): string
     {

@@ -92,12 +92,12 @@ class SNMPModel
      *
      * @var string
      */
-    private $ip;
+    protected $ip;
 
     /**
      * @var \SNMP
      */
-    private $snmpSession;
+    protected $snmpSession;
 
     /**
      * @var \Maxbond\SNMPModel\ReceiversClassMap
@@ -135,7 +135,7 @@ class SNMPModel
      *
      * @throws \Maxbond\SNMPModel\SNMPModelException
      */
-    public function get()
+    public function get(): array
     {
         if (null === $this->model) {
             throw new SNMPModelException('Model scheme is empty');
@@ -143,16 +143,16 @@ class SNMPModel
 
         if (null === $this->snmpSession) {
             try {
-                $this->initSNMP();
+                $this->initSNMPSession();
             } catch (\Exception $e) {
                 throw new SNMPModelException($e->getMessage());
             }
         }
 
-        $modelBuilder = new ModelBuilder($this->model, $this->receiversClassMap, $this->modifiersClassMap);
+        $modelDataReceiver = new ModelDataReceiver($this->model, $this->receiversClassMap, $this->modifiersClassMap);
 
         try {
-            $result = $modelBuilder->get($this->snmpSession);
+            $result = $modelDataReceiver->getData($this->snmpSession);
         } catch (\Exception $e) {
             throw new SNMPModelException($e->getMessage());
         }
@@ -163,11 +163,54 @@ class SNMPModel
     /**
      * Set model to given scheme.
      *
-     * @param $model
+     * @param array $model
      */
-    public function setModel($model)
+    public function setModel(array $model): void
     {
         $this->model = $model;
+    }
+
+    /**
+     * Initialize SNMP session.
+     *
+     * @throws \Maxbond\SNMPModel\SNMPModelException
+     */
+    public function initSNMPSession(): void
+    {
+        try {
+            $this->snmpSession = new \SNMP($this->snmpVersion, $this->ip, $this->snmpCommunity, $this->snmpTimeout);
+            $this->snmpSession->exceptions_enabled = true;
+            $this->snmpSession->oid_output_format = SNMP_OID_OUTPUT_NUMERIC;
+
+            if (true === $this->quickPrint) {
+                $this->snmpSession->quick_print = true;
+            }
+            if (true === $this->enumPrint) {
+                $this->snmpSession->enum_print = true;
+            }
+        } catch (\Exception $e) {
+            throw new SNMPModelException($e->getMessage());
+        }
+    }
+
+    /**
+     * Get SNMP session
+     *
+     * @return null|\SNMP
+     */
+    public function getSNMPSession(): ?\SNMP
+    {
+        return $this->snmpSession;
+    }
+
+    /**
+     * Set SNMP session
+     *
+     * @param \SNMP $snmpSession
+     */
+    public function setSNMPSession(\SNMP $snmpSession): void
+    {
+        $this->snmpSession = $snmpSession;
     }
 
     /**
@@ -175,10 +218,10 @@ class SNMPModel
      *
      * @throws \Maxbond\SNMPModel\SNMPModelException
      */
-    protected function boot()
+    protected function boot(): void
     {
-        if (!empty($this->file)) {
-            if (!file_exists($this->file)) {
+        if (! empty($this->file)) {
+            if (! file_exists($this->file)) {
                 throw new SNMPModelException('File '.$this->file.' does not exists');
             }
             $this->model = Yaml::parseFile($this->file);
@@ -188,7 +231,7 @@ class SNMPModel
     /**
      * Register all class maps.
      */
-    protected function initClassMaps()
+    protected function initClassMaps(): void
     {
         /**
          * Register default class maps.
@@ -208,28 +251,5 @@ class SNMPModel
 
         $this->receiversClassMap = new ReceiversClassMap($receiversClasses);
         $this->modifiersClassMap = new ModifiersClassMap($modifiersClasses);
-    }
-
-    /**
-     * Initialize SNMP session.
-     *
-     * @throws \Maxbond\SNMPModel\SNMPModelException
-     */
-    protected function initSNMP()
-    {
-        try {
-            $this->snmpSession = new \SNMP($this->snmpVersion, $this->ip, $this->snmpCommunity, $this->snmpTimeout);
-            $this->snmpSession->exceptions_enabled = true;
-            $this->snmpSession->oid_output_format = SNMP_OID_OUTPUT_NUMERIC;
-
-            if (true === $this->quickPrint) {
-                $this->snmpSession->quick_print = true;
-            }
-            if (true === $this->enumPrint) {
-                $this->snmpSession->enum_print = true;
-            }
-        } catch (\Exception $e) {
-            throw new SNMPModelException($e->getMessage());
-        }
     }
 }

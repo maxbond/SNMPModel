@@ -32,15 +32,15 @@ class ReceiveByType
     /**
      * ReceiveByType constructor.
      *
-     * @param array                                $model
+     * @param array $model
      * @param \Maxbond\SNMPModel\ReceiversClassMap $receiverClassMap
-     * @param \SNMP                                $snmpSession
+     * @param \SNMP $snmpSession
      */
     public function __construct(array $model, ReceiversClassMap $receiverClassMap, \SNMP $snmpSession)
     {
         $this->receiverClassMap = $receiverClassMap;
         $this->snmpSession = $snmpSession;
-        $this->packedModel = $this->aggregateTypes($model, $this->receiverClassMap);
+        $this->packedModel = $this->aggregateTypes($model);
     }
 
     /**
@@ -67,21 +67,21 @@ class ReceiveByType
     }
 
     /**
-     * @param array                                $model
-     * @param \Maxbond\SNMPModel\ReceiversClassMap $receiverClassMap
+     * Aggregate model types to one entity
      *
+     * @param array $model
      * @return array
      */
-    protected function aggregateTypes(array $model, ReceiversClassMap $receiverClassMap): array
+    protected function aggregateTypes($model): array
     {
         $aggregatedTypes = [];
         foreach ($model as $name => $item) {
-            if (!array_key_exists(static::OID_FIELD, $item)) {
+            if (! array_key_exists(static::OID_FIELD, $item)) {
                 continue;
             }
             if (array_key_exists(static::RECEIVER_FIELD, $item)
-                && $receiverClassMap->typeExist($item[static::RECEIVER_FIELD])) {
-                $aggregatedTypes[$item[static::RECEIVER_FIELD]][$name] = $item[static::OID_FIELD];
+                && $this->receiverClassMap->typeExist($item[static::RECEIVER_FIELD])) {
+                    $aggregatedTypes[$item[static::RECEIVER_FIELD]][$name] = $item[static::OID_FIELD];
             } else {
                 $aggregatedTypes[static::DEFAULT_RECEIVER_TYPE][$name] = $item[static::OID_FIELD];
             }

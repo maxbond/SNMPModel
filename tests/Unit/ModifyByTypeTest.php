@@ -19,11 +19,11 @@ class ModifyByTypeTest extends TestCase
 
         $result = ['t1' => 'INTEGER: 20 d'];
 
-        $modifer = new ModifyByType($model, $modifierMap);
+        $modifier = new ModifyByType($model, $modifierMap);
 
-        $modifed = $modifer->modify($result);
+        $modified = $modifier->modify($result);
 
-        $this->assertArrayHasKey('t1', $modifed);
-        $this->assertEquals(20, $modifed['t1']);
+        $this->assertArrayHasKey('t1', $modified);
+        $this->assertEquals(20, $modified['t1']);
     }
 }

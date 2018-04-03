@@ -5,7 +5,7 @@ namespace Maxbond\SNMPModel;
 /**
  * Class SNMPModel.
  */
-class ModelBuilder
+class ModelDataReceiver
 {
     /**
      * @var array
@@ -45,7 +45,7 @@ class ModelBuilder
      *
      * @throws \Maxbond\SNMPModel\SNMPModelException
      */
-    public function get(\SNMP $snmpSession): array
+    public function getData(\SNMP $snmpSession): array
     {
         $byTypeReceiver = new ReceiveByType($this->model, $this->receiverClassMap, $snmpSession);
         try {

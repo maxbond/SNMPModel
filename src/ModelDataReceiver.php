@@ -3,7 +3,9 @@
 namespace Maxbond\SNMPModel;
 
 /**
- * Class SNMPModel.
+ * Class ModelDataReceiver
+ *
+ * @package Maxbond\SNMPModel
  */
 class ModelDataReceiver
 {

@@ -58,7 +58,13 @@ class ModelDataReceiver
         }
 
         $modifierByType = new ModifyByType($this->model, $this->modifiersClassMap);
-        $result = $modifierByType->modify($result);
+
+        try{
+            $result = $modifierByType->modify($result);
+        }catch (\Exception $e){
+            throw new SNMPModelException($e->getMessage());
+        }
+
 
         return $result;
     }

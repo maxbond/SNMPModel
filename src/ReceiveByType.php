@@ -27,7 +27,7 @@ class ReceiveByType
     /**
      * @var array
      */
-    protected $packedModel;
+    protected $modelPackedByReceiverType;
 
     /**
      * ReceiveByType constructor.
@@ -40,7 +40,7 @@ class ReceiveByType
     {
         $this->receiverClassMap = $receiverClassMap;
         $this->snmpSession = $snmpSession;
-        $this->packedModel = $this->aggregateTypes($model);
+        $this->modelPackedByReceiverType = $this->aggregateTypes($model);
     }
 
     /**
@@ -53,7 +53,7 @@ class ReceiveByType
     public function receive(): array
     {
         $result = [];
-        foreach ($this->packedModel as $type => $item) {
+        foreach ($this->modelPackedByReceiverType as $type => $item) {
             try {
                 $receiverName = $this->receiverClassMap->getClass($type);
             } catch (\Exception $e) {
@@ -79,8 +79,11 @@ class ReceiveByType
             if (! array_key_exists(static::OID_FIELD, $item)) {
                 continue;
             }
-            if (array_key_exists(static::RECEIVER_FIELD, $item)
-                && $this->receiverClassMap->typeExist($item[static::RECEIVER_FIELD])) {
+
+            $receiverExist = array_key_exists(static::RECEIVER_FIELD, $item)
+                && $this->receiverClassMap->typeExist($item[static::RECEIVER_FIELD]);
+
+            if ($receiverExist) {
                     $aggregatedTypes[$item[static::RECEIVER_FIELD]][$name] = $item[static::OID_FIELD];
             } else {
                 $aggregatedTypes[static::DEFAULT_RECEIVER_TYPE][$name] = $item[static::OID_FIELD];

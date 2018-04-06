@@ -34,7 +34,8 @@ class ModifyByType
     public function modify(array $result): array
     {
         foreach ($this->model as $name => $item) {
-            $modifierRegistered = array_key_exists(static::MODIFIER_FIELD, $item) && $this->modifiersClassMap->typeExist($item[static::MODIFIER_FIELD]);
+            $modifierRegistered = array_key_exists(static::MODIFIER_FIELD, $item)
+                && $this->modifiersClassMap->typeExist($item[static::MODIFIER_FIELD]);
             $resultHasModelField = array_key_exists($name, $result);
 
             if ($resultHasModelField && $modifierRegistered) {

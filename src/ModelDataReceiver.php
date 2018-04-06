@@ -19,7 +19,7 @@ class ModelDataReceiver
      */
     protected $receiverClassMap;
 
-    protected $modifiersClassMap = null;
+    protected $modifiersClassMap;
 
     /**
      * ModelBuilder constructor.
@@ -31,7 +31,7 @@ class ModelDataReceiver
     public function __construct(
         array $model,
         ReceiversClassMap $receiversClassMap,
-        ModifiersClassMap $modifiersClassMap = null
+        ModifiersClassMap $modifiersClassMap
     ) {
         $this->model = $model;
         $this->receiverClassMap = $receiversClassMap;
@@ -50,16 +50,15 @@ class ModelDataReceiver
     public function getData(\SNMP $snmpSession): array
     {
         $byTypeReceiver = new ReceiveByType($this->model, $this->receiverClassMap, $snmpSession);
+
         try {
             $result = $byTypeReceiver->receive();
         } catch (\Exception $e) {
             throw new SNMPModelException($e->getMessage());
         }
 
-        if (null !== $this->modifiersClassMap) {
-            $modifierByType = new ModifyByType($this->model, $this->modifiersClassMap);
-            $result = $modifierByType->modify($result);
-        }
+        $modifierByType = new ModifyByType($this->model, $this->modifiersClassMap);
+        $result = $modifierByType->modify($result);
 
         return $result;
     }

@@ -122,7 +122,7 @@ class SNMPModel extends SNMPDevice
     }
 
     /**
-     *  Boot model.
+     *  By default load scheme from yaml file
      *
      * @throws \Maxbond\SNMPModel\SNMPModelException
      */

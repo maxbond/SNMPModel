@@ -64,13 +64,8 @@ abstract class SNMPDevice
             $this->snmpSession = new \SNMP($this->snmpVersion, $this->ip, $this->snmpCommunity, $this->snmpTimeout);
             $this->snmpSession->exceptions_enabled = true;
             $this->snmpSession->oid_output_format = SNMP_OID_OUTPUT_NUMERIC;
-
-            if (true === $this->quickPrint) {
-                $this->snmpSession->quick_print = true;
-            }
-            if (true === $this->enumPrint) {
-                $this->snmpSession->enum_print = true;
-            }
+            $this->snmpSession->quick_print = $this->quickPrint;
+            $this->snmpSession->enum_print = $this->enumPrint;
         } catch (\Exception $e) {
             throw new SNMPModelException($e->getMessage());
         }
